@@ -37,6 +37,29 @@ const skillIconMap = {
   'Analytics': FaChartLine,
 };
 
+const skillCategoryMap = {
+  'React.js': 'tech',
+  'TailwindCSS': 'tech',
+  'Node.js': 'tech',
+  'JavaScript': 'tech',
+  'TypeScript': 'tech',
+  'Next.js': 'tech',
+  'Firebase': 'tech',
+  'Figma': 'tech',
+  'HTML5': 'tech',
+  'CSS3': 'tech',
+  'Database': 'tech',
+  'Git/GitHub': 'tech',
+  'Meta Ads': 'marketing',
+  'Google Ads': 'marketing',
+  'Shopee Seller': 'marketing',
+  'TikTok Shop': 'marketing',
+  'Live Hosting': 'marketing',
+  'Content Strategy': 'marketing',
+  'Copywriting': 'marketing',
+  'Analytics': 'marketing',
+};
+
 const serviceIconMap = {
   FaCode, FaChartLine, FaHeadset,
 };
@@ -83,7 +106,7 @@ function mapSkill(row) {
     name: row.name,
     level: row.level,
     icon: skillIconMap[row.name] || null,
-    category: row.category || 'tech',
+    category: row.category || skillCategoryMap[row.name] || 'tech',
   };
 }
 
