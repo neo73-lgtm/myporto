@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { FaHome, FaUser, FaCode, FaBriefcase, FaSignOutAlt, FaBars, FaTimes, FaProjectDiagram } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 import ThemeToggle from '../components/ui/ThemeToggle';
+import ErrorBoundary from '../components/ui/ErrorBoundary';
 import useDarkMode from '../hooks/useDarkMode';
 
 const navItems = [
@@ -20,11 +21,18 @@ export default function AdminLayout() {
   const [darkMode, toggleDarkMode] = useDarkMode();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const session = localStorage.getItem('admin_session');
-  if (!session) {
-    navigate('/admin/login', { replace: true });
-    return null;
-  }
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const session = localStorage.getItem('admin_session');
+    if (!session) {
+      navigate('/admin/login', { replace: true });
+    } else {
+      setChecking(false);
+    }
+  }, [navigate]);
+
+  if (checking) return null;
 
   const handleLogout = () => {
     localStorage.removeItem('admin_session');
@@ -95,7 +103,7 @@ export default function AdminLayout() {
             </Link>
           </header>
           <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-            <Outlet />
+            <ErrorBoundary><Outlet /></ErrorBoundary>
           </main>
         </div>
       </div>
