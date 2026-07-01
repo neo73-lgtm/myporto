@@ -174,7 +174,7 @@ function mapTestimonial(row) {
     name: row.name || fb?.name || '',
     role: row.role || fb?.role || '',
     roleEn: row.role_id || fb?.roleEn || fb?.role || '',
-    company: fb?.company || '',
+    company: row.company || fb?.company || '',
     text: row.content || fb?.text || '',
     textEn: row.content_id || fb?.textEn || fb?.text || '',
     avatar: row.avatar || fb?.avatar || '',

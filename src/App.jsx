@@ -22,6 +22,7 @@ import ProjectsEditor from './admin/pages/ProjectsEditor';
 import ExperienceEditor from './admin/pages/ExperienceEditor';
 import EducationEditor from './admin/pages/EducationEditor';
 import SkillsEditor from './admin/pages/SkillsEditor';
+import TestimonialsEditor from './admin/pages/TestimonialsEditor';
 import useDarkMode from './hooks/useDarkMode';
 import { PortfolioProvider } from './context/PortfolioContext';
 
@@ -98,6 +99,7 @@ export default function App() {
             <Route path="experience" element={<ExperienceEditor />} />
             <Route path="education" element={<EducationEditor />} />
             <Route path="skills" element={<SkillsEditor />} />
+            <Route path="testimonials" element={<TestimonialsEditor />} />
           </Route>
           <Route path="/cv" element={<CV />} />
           <Route path="/*" element={<PublicLayout darkMode={darkMode} toggleDarkMode={toggleDarkMode} />} />

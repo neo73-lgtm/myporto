@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { FaHome, FaUser, FaCode, FaBriefcase, FaSignOutAlt, FaBars, FaTimes, FaProjectDiagram, FaGraduationCap } from 'react-icons/fa';
+import { FaHome, FaUser, FaCode, FaBriefcase, FaSignOutAlt, FaBars, FaTimes, FaProjectDiagram, FaGraduationCap, FaStar } from 'react-icons/fa';
 import { useLanguage } from '../context/LanguageContext';
 import ThemeToggle from '../components/ui/ThemeToggle';
 import ErrorBoundary from '../components/ui/ErrorBoundary';
@@ -13,6 +13,7 @@ const navItems = [
   { path: '/admin/experience', labelKey: 'experience', icon: FaBriefcase },
   { path: '/admin/education', labelKey: 'education', icon: FaGraduationCap },
   { path: '/admin/skills', labelKey: 'skills', icon: FaCode },
+  { path: '/admin/testimonials', labelKey: 'testimonials', icon: FaStar },
 ];
 
 export default function AdminLayout() {

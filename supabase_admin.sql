@@ -52,3 +52,15 @@ INSERT INTO auth.identities (
 );
 
 ALTER TABLE projects ADD COLUMN IF NOT EXISTS video_url TEXT DEFAULT '';
+
+CREATE TABLE IF NOT EXISTS testimonials (
+  id BIGSERIAL PRIMARY KEY,
+  name TEXT DEFAULT '',
+  role TEXT DEFAULT '',
+  company TEXT DEFAULT '',
+  content TEXT DEFAULT '',
+  content_id TEXT DEFAULT '',
+  avatar TEXT DEFAULT '',
+  rating INT DEFAULT 5,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
