@@ -21,6 +21,7 @@ function FadeUp({ children, className = '' }) {
 
 function CampaignImage({ project }) {
   const [thumb, setThumb] = useState(project.image);
+  const [failed, setFailed] = useState(false);
   const fetched = useRef(false);
 
   useEffect(() => {
@@ -32,8 +33,34 @@ function CampaignImage({ project }) {
     }
   }, [project.videoUrl, project.image]);
 
+  const handleError = () => {
+    if (!fetched.current && project.videoUrl) {
+      fetched.current = true;
+      fetchThumbnail(project.videoUrl).then(url => {
+        if (url) { setThumb(url); return; }
+        setFailed(true);
+      });
+      return;
+    }
+    setFailed(true);
+  };
+
+  if (failed) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800">
+        <span className="text-slate-400 dark:text-slate-500 text-xs font-medium">No thumbnail</span>
+      </div>
+    );
+  }
+
   return (
-    <img src={thumb} alt={project.title} className="w-full h-full object-cover group-hover:scale-[1.08] transition-transform duration-500" loading="lazy" />
+    <img
+      src={thumb}
+      alt={project.title}
+      className="w-full h-full object-cover group-hover:scale-[1.08] transition-transform duration-500"
+      loading="lazy"
+      onError={handleError}
+    />
   );
 }
 

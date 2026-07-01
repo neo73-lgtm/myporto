@@ -7,7 +7,19 @@ export async function fetchOembed(videoUrl) {
   if (cache.has(videoUrl)) return cache.get(videoUrl);
 
   const strategies = [
-    // Strategy 1: microlink (works for all URLs)
+    // Strategy 1: server-side proxy (no CORS, more reliable)
+    async () => {
+      const res = await fetch(`/api/thumbnail?url=${encodeURIComponent(videoUrl)}`);
+      if (!res.ok) throw new Error('server proxy failed');
+      const data = await res.json();
+      if (!data.thumbnail) throw new Error('no thumbnail from proxy');
+      return {
+        title: null,
+        thumbnail_url: data.thumbnail,
+        screenshot_url: null,
+      };
+    },
+    // Strategy 2: microlink (client-side fallback)
     async () => {
       const res = await fetch(`${MICROLINK_API}/?url=${encodeURIComponent(videoUrl)}`);
       if (!res.ok) throw new Error('microlink failed');
@@ -19,7 +31,7 @@ export async function fetchOembed(videoUrl) {
         screenshot_url: `${MICROLINK_API}/?url=${encodeURIComponent(videoUrl)}&screenshot=true&meta=false&embed=screenshot.url`,
       };
     },
-    // Strategy 2: noembed (works for YouTube, Vimeo, etc.)
+    // Strategy 3: noembed (works for YouTube, Vimeo, etc.)
     async () => {
       const res = await fetch(`https://noembed.com/embed?url=${encodeURIComponent(videoUrl)}`);
       if (!res.ok) throw new Error('noembed failed');
