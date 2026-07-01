@@ -3,6 +3,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import { FaPlus, FaTrash, FaExternalLinkAlt, FaChevronDown, FaChevronRight, FaSave } from 'react-icons/fa';
+import { fetchOembed } from '../../utils/oembed';
 
 const DEFAULT_THUMBNAIL = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&h=400&fit=crop';
 
@@ -20,6 +21,7 @@ function toRow(item) {
     live_url: item.liveUrl || '',
     source_url: item.githubUrl || '',
     tech_stack: item.techStack || [],
+    video_url: item.videoUrl || '',
   };
 }
 
@@ -49,6 +51,7 @@ export default function ProjectsEditor() {
       techStack: [],
       liveUrl: '',
       githubUrl: '',
+      videoUrl: '',
     }, ...prev]);
     setExpanded(prev => new Set(prev).add(id));
     requestAnimationFrame(() => {
@@ -203,15 +206,20 @@ export default function ProjectsEditor() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[10px] sm:text-xs font-medium text-slate-500 mb-1">Kategori</label>
-                  <select
-                    value={item.category}
-                    onChange={(e) => updateItem(item._id, 'category', e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 text-sm"
-                  >
-                    <option>Web App</option>
-                    <option>Mobile</option>
-                    <option>UI/UX</option>
-                  </select>
+                    <select
+                      value={item.category}
+                      onChange={(e) => {
+                        updateItem(item._id, 'category', e.target.value);
+                        if (e.target.value !== 'Campaign') {
+                          updateItem(item._id, 'videoUrl', '');
+                        }
+                      }}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 text-sm"
+                    >
+                      <option>Web App</option>
+                      <option>Mobile</option>
+                      <option>Campaign</option>
+                    </select>
                 </div>
                 <div>
                   <label className="block text-[10px] sm:text-xs font-medium text-slate-500 mb-1">{t('admin.projectUrl')}</label>
@@ -281,6 +289,34 @@ export default function ProjectsEditor() {
                   />
                 </div>
               </div>
+              {item.category === 'Campaign' && (
+              <div>
+                <label className="block text-[10px] sm:text-xs font-medium text-slate-500 mb-1">Link Video TikTok/Instagram</label>
+                <div className="flex gap-2">
+                  <input
+                    value={item.videoUrl || ''}
+                    onChange={async (e) => {
+                      const url = e.target.value;
+                      updateItem(item._id, 'videoUrl', url);
+                      if (!url) return;
+                      const data = await fetchOembed(url);
+                      if (data) {
+                        updateItem(item._id, 'image', data.thumbnail_url || data.screenshot_url || '');
+                      }
+                      if (data?.title && !item.title) updateItem(item._id, 'title', data.title);
+                    }}
+                    className="flex-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/50 text-sm"
+                    placeholder="https://www.tiktok.com/@user/video/123..."
+                  />
+                  {item.videoUrl && (
+                    <a href={item.videoUrl} target="_blank" rel="noopener noreferrer" className="p-2 rounded-lg text-slate-400 hover:text-primary-500 transition-colors">
+                      <FaExternalLinkAlt size={12} />
+                    </a>
+                  )}
+                </div>
+                <p className="text-[10px] text-slate-400 mt-1">Paste link TikTok/Instagram. Thumbnail akan otomatis terisi.</p>
+              </div>
+              )}
               <div>
                 <label className="block text-[10px] sm:text-xs font-medium text-slate-500 mb-1">Thumbnail URL (ganti jika hasil screenshot tidak sesuai)</label>
                 <div className="flex gap-2 items-start">

@@ -10,6 +10,7 @@ import Projects from './components/sections/Projects';
 import Services from './components/sections/Services';
 import Testimonials from './components/sections/Testimonials';
 import WorkExperience from './components/sections/WorkExperience';
+import Education from './components/sections/Education';
 import Contact from './components/sections/Contact';
 import CV from './pages/CV';
 import AdminLogin from './admin/pages/Login';
@@ -18,6 +19,7 @@ import AdminLayout from './admin/AdminLayout';
 import PersonalEditor from './admin/pages/PersonalEditor';
 import ProjectsEditor from './admin/pages/ProjectsEditor';
 import ExperienceEditor from './admin/pages/ExperienceEditor';
+import EducationEditor from './admin/pages/EducationEditor';
 import SkillsEditor from './admin/pages/SkillsEditor';
 import useDarkMode from './hooks/useDarkMode';
 import { PortfolioProvider } from './context/PortfolioContext';
@@ -48,15 +50,6 @@ function ScrollToTopBtn() {
   );
 }
 
-function Loader() {
-  return (
-    <div className="fixed inset-0 z-[9999] bg-white dark:bg-slate-900 flex flex-col items-center justify-center gap-4">
-      <motion.div animate={{ rotate: 360 }} transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }} className="w-10 h-10 sm:w-12 sm:h-12 border-[3px] border-slate-200 dark:border-slate-700 border-t-primary-500 rounded-full" />
-      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-sm text-slate-400 dark:text-slate-500 font-medium">Loading...</motion.p>
-    </div>
-  );
-}
-
 function HomePage() {
   return (
     <>
@@ -66,6 +59,7 @@ function HomePage() {
       <Services />
       <Testimonials />
       <WorkExperience />
+      <Education />
       <Contact />
     </>
   );
@@ -88,14 +82,6 @@ function PublicLayout({ darkMode, toggleDarkMode }) {
 
 export default function App() {
   const [darkMode, toggleDarkMode] = useDarkMode();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 600);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (loading) return <Loader />;
 
   return (
     <div className="min-h-screen transition-colors duration-300">
@@ -108,6 +94,7 @@ export default function App() {
             <Route path="personal" element={<PersonalEditor />} />
             <Route path="projects" element={<ProjectsEditor />} />
             <Route path="experience" element={<ExperienceEditor />} />
+            <Route path="education" element={<EducationEditor />} />
             <Route path="skills" element={<SkillsEditor />} />
           </Route>
           <Route path="/cv" element={<CV />} />

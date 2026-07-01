@@ -37,7 +37,7 @@ export default function Services() {
                   <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl bg-primary-50 dark:bg-primary-500/10 flex items-center justify-center text-primary-500 transition-all duration-300 mb-4 sm:mb-5 lg:mb-6">
                     <Icon size={22} className="sm:w-6 sm:h-6 lg:w-7 lg:h-7" />
                   </div>
-                  <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-slate-900 dark:text-white mb-2 sm:mb-3">{service.title}</h3>
+                  <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-slate-900 dark:text-white mb-2 sm:mb-3">{lang === 'en' && service.titleEn ? service.titleEn : service.title}</h3>
                   <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-4 sm:mb-5 leading-relaxed flex-1">
                     {lang === 'en' && service.descriptionEn ? service.descriptionEn : service.description}
                   </p>

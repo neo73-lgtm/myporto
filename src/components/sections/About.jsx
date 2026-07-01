@@ -34,7 +34,7 @@ export default function About() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-14 items-center">
           <FadeUp className="order-2 lg:order-1">
             <div className="space-y-3 sm:space-y-4">
-              {personalData.aboutParagraphs.map((p, i) => (
+              {(lang === 'en' && personalData.aboutParagraphsEn ? personalData.aboutParagraphsEn : personalData.aboutParagraphs).map((p, i) => (
                 <p key={i} className="text-sm sm:text-base text-slate-500 dark:text-slate-400 leading-[1.7] sm:leading-relaxed">{p}</p>
               ))}
             </div>

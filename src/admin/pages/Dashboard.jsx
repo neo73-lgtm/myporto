@@ -1,17 +1,18 @@
 import { useLanguage } from '../../context/LanguageContext';
 import { usePortfolio } from '../../context/PortfolioContext';
 import { isSupabaseConfigured } from '../../lib/supabase';
-import { FaUser, FaProjectDiagram, FaBriefcase, FaCode } from 'react-icons/fa';
+import { FaUser, FaProjectDiagram, FaBriefcase, FaCode, FaGraduationCap } from 'react-icons/fa';
 
 export default function AdminDashboard() {
   const { t } = useLanguage();
-  const { personalData, projects, workExperience, skills } = usePortfolio();
+  const { personalData, projects, workExperience, skills, education } = usePortfolio();
 
   const stats = [
     { label: 'Personal Info', count: 1, icon: FaUser, color: 'bg-blue-500' },
     { label: 'Projects', count: projects.length, icon: FaProjectDiagram, color: 'bg-purple-500' },
     { label: 'Experience', count: workExperience.length, icon: FaBriefcase, color: 'bg-emerald-500' },
     { label: 'Skills', count: skills.length, icon: FaCode, color: 'bg-amber-500' },
+    { label: 'Education', count: education.length, icon: FaGraduationCap, color: 'bg-rose-500' },
   ];
 
   return (

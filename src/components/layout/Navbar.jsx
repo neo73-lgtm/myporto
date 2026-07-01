@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-scroll';
-import { FaBars, FaTimes, FaGlobe } from 'react-icons/fa';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import ThemeToggle from '../ui/ThemeToggle';
 import useScrollSpy from '../../hooks/useScrollSpy';
 import { useLanguage } from '../../context/LanguageContext';
@@ -19,7 +19,7 @@ const linkVariants = {
 };
 
 export default function Navbar({ darkMode, toggleDarkMode }) {
-  const { lang, toggleLang, t } = useLanguage();
+  const { t } = useLanguage();
   const { personalData } = usePortfolio();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -44,7 +44,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
       <motion.nav
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1, transition: { duration: 0.4, ease: 'easeOut' } }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'glass' : 'bg-transparent'}`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-[background-color,border-color] duration-300 ${scrolled ? 'glass' : 'bg-transparent'}`}
       >
         <div className="max-w-6xl mx-auto px-5 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16 lg:h-20">
@@ -74,7 +74,7 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                     }
                   `}
                 >
-                  {lang === 'en' ? link.nameEn : link.name}
+                  {link.name}
                   {activeId === link.href && (
                     <motion.span
                       layoutId="nav-pill"
@@ -87,16 +87,6 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
             </div>
 
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <motion.button
-                onClick={toggleLang}
-                className="touch-target w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-xs font-semibold gap-1"
-                whileTap={{ scale: 0.9 }}
-                aria-label="Toggle language"
-              >
-                <FaGlobe size={12} />
-                {lang.toUpperCase()}
-              </motion.button>
-
               <ThemeToggle darkMode={darkMode} toggle={toggleDarkMode} />
 
               <button
@@ -151,19 +141,11 @@ export default function Navbar({ darkMode, toggleDarkMode }) {
                       }`}
                     >
                       <span className={`w-1.5 h-1.5 rounded-full ${activeId === link.href ? 'bg-primary-500' : 'bg-slate-300 dark:bg-slate-600'}`} />
-                      {lang === 'en' ? link.nameEn : link.name}
+                  {link.name}
                     </Link>
                   </motion.div>
                 ))}
-                <div className="border-t border-slate-100 dark:border-slate-800 pt-3 mt-3">
-                  <button
-                    onClick={() => { toggleLang(); }}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 w-full transition-colors"
-                  >
-                    <FaGlobe size={14} />
-                    {lang === 'id' ? 'Switch to English' : 'Ganti ke Indonesia'}
-                  </button>
-                </div>
+
               </div>
             </motion.div>
           </>

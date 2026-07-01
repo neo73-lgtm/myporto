@@ -9,15 +9,22 @@ export const personalData = {
   name: 'Ahmad Fauzi',
   initials: 'AF',
   title: 'Full-Stack Developer & Digital Growth Specialist',
+  titleEn: 'Full-Stack Developer & Digital Growth Specialist',
   titles: ['Full-Stack Developer', 'Digital Growth Specialist', 'UI/UX Enthusiast'],
   email: 'ahmad.fauzi@email.com',
   phone: '+62 812-3456-7890',
   location: 'Jakarta, Indonesia',
   workingHours: 'Senin - Jumat, 09:00 - 17:00 WIB',
+  workingHoursEn: 'Monday - Friday, 09:00 - 17:00 WIB',
   aboutParagraphs: [
     'Saya adalah jembatan antara dua dunia: teknologi dan pemasaran. Sebagai Full-Stack Developer, saya membangun produk digital yang solid. Sebagai Digital Growth Specialist, saya memastikan produk itu dikenal, dikunjungi, dan dibeli. Bukan sekadar coding — saya bicara soal hasil.',
     'Portofolio saya bukan hanya baris kode, tapi campaign yang menghasilkan ROAS 4.8x, toko online yang naik 3x lipat dalam 2 bulan, dan live hosting yang mengubah penonton menjadi pembeli. Saya menguasai React.js hingga Meta Ads, Node.js hingga Shopee Seller Center, TailwindCSS hingga TikTok Shop.',
     'Saya percaya: produk terbaik pun tidak akan berarti tanpa strategi distribusi yang tepat. Dan strategi terbaik pun akan kandas tanpa eksekusi teknis yang kuat. Saya ada di titik temu keduanya. Siap membangun dan menumbuhkan produk Anda?',
+  ],
+  aboutParagraphsEn: [
+    'I am the bridge between two worlds: technology and marketing. As a Full-Stack Developer, I build solid digital products. As a Digital Growth Specialist, I make sure those products are known, visited, and purchased. Not just coding — I talk about results.',
+    'My portfolio is not just lines of code, but campaigns that delivered 4.8x ROAS, online stores that grew 3x in 2 months, and live hosting that turned viewers into buyers. I master React.js to Meta Ads, Node.js to Shopee Seller Center, TailwindCSS to TikTok Shop.',
+    'I believe: the best product means nothing without the right distribution strategy. And the best strategy will fail without strong technical execution. I exist at the intersection of both. Ready to build and grow your product?',
   ],
   avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed&backgroundColor=2563eb',
   cvUrl: '/cv',
@@ -132,11 +139,10 @@ export const projects = [
   {
     id: 4,
     title: 'Company Profile Website',
-    category: 'UI/UX',
-    description: 'Desain ulang website profil perusahaan dengan fokus pada pengalaman pengguna dan konversi lead.',
-    descriptionEn: 'Redesign of company profile website focusing on user experience and lead conversion.',
+    category: 'Web App',
+    description: 'Pengembangan website profil perusahaan modern dengan performa tinggi dan SEO optimal.',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop',
-    techStack: ['Figma', 'Next.js', 'TailwindCSS'],
+    techStack: ['Next.js', 'TailwindCSS', 'Figma'],
     liveUrl: 'https://example.com',
     githubUrl: 'https://github.com/ahmadfauzi/companyprofile',
   },
@@ -154,9 +160,8 @@ export const projects = [
   {
     id: 6,
     title: 'Dashboard Analytics',
-    category: 'UI/UX',
-    description: 'Dashboard analitik dengan visualisasi data interaktif, export report, dan filtering data real-time.',
-    descriptionEn: 'Analytics dashboard with interactive data visualization, report export, and real-time filtering.',
+    category: 'Web App',
+    description: 'Dashboard analitik dengan visualisasi data interaktif dan filtering data real-time.',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
     techStack: ['React', 'D3.js', 'TailwindCSS', 'Node.js'],
     liveUrl: 'https://example.com',
@@ -167,16 +172,26 @@ export const projects = [
     title: 'Toko Fashion Meta Ads Campaign',
     category: 'Campaign',
     description: 'Menjalankan campaign Meta Ads untuk toko fashion lokal. Meningkatkan penjualan 3x lipat dalam 2 bulan dengan ROAS 4.8x.',
-    descriptionEn: 'Ran Meta Ads campaign for a local fashion store. Increased sales 3x in 2 months with 4.8x ROAS.',
     image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop',
     techStack: ['Meta Ads', 'Shopee', 'Canva', 'CapCut'],
     liveUrl: '',
     githubUrl: '',
+    videoUrl: 'https://www.tiktok.com/@tokofashion/video/7412345678901234567',
+  },
+  {
+    id: 8,
+    title: 'Brand Kolaborasi Content',
+    category: 'Campaign',
+    description: 'Content collaboration dengan brand lokal untuk campaign Ramadhan. Melibatkan live shopping dan konten UGC.',
+    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&h=400&fit=crop',
+    techStack: ['TikTok Shop', 'Live Hosting', 'Content Strategy'],
+    liveUrl: '',
+    githubUrl: '',
+    videoUrl: '',
   },
 ];
 
-export const categories = ['Semua', 'Web App', 'Mobile', 'UI/UX', 'Campaign'];
-export const categoriesEn = ['All', 'Web App', 'Mobile', 'UI/UX', 'Campaign'];
+export const categories = ['Semua', 'Web App', 'Mobile', 'Campaign'];
 
 export const services = [
   {
@@ -242,18 +257,46 @@ export const testimonials = [
 ];
 
 export const navLinks = [
-  { name: 'Home', nameEn: 'Home', href: 'hero' },
-  { name: 'About', nameEn: 'About', href: 'about' },
-  { name: 'Projects', nameEn: 'Projects', href: 'projects' },
-  { name: 'Services', nameEn: 'Services', href: 'services' },
-  { name: 'Testimonials', nameEn: 'Testimonials', href: 'testimonials' },
-  { name: 'Experience', nameEn: 'Experience', href: 'experience' },
-  { name: 'Contact', nameEn: 'Contact', href: 'contact' },
+  { name: 'Home', href: 'hero' },
+  { name: 'Tentang', href: 'about' },
+  { name: 'Proyek', href: 'projects' },
+  { name: 'Pengalaman', href: 'experience' },
+  { name: 'Kontak', href: 'contact' },
+];
+
+export const education = [
+  {
+    id: 1,
+    degree: 'S.Kom., Ilmu Komputer',
+    degreeEn: 'B.Comp., Computer Science',
+    institution: 'Universitas Indonesia',
+    location: 'Jakarta',
+    period: '2017 - 2021',
+    periodEn: '2017 - 2021',
+    description: 'Program studi Ilmu Komputer dengan fokus pada pengembangan web dan kecerdasan buatan. Aktif dalam organisasi mahasiswa dan berbagai kompetisi. Lulus dengan predikat cumlaude.',
+    descriptionEn: 'Computer Science program with a focus on web development and artificial intelligence. Active in student organizations and various competitions. Graduated with cum laude honors.',
+    gpa: '3.78',
+    technologies: ['Python', 'Java', 'React', 'MySQL', 'TensorFlow'],
+  },
+  {
+    id: 2,
+    degree: 'Sertifikasi Full-Stack Web Development',
+    degreeEn: 'Full-Stack Web Development Certification',
+    institution: 'Dicoding Indonesia',
+    location: 'Online',
+    period: '2021',
+    periodEn: '2021',
+    description: 'Kursus intensif Full-Stack Web Development mencakup React.js, Node.js, Express, MongoDB, dan TailwindCSS dengan proyek akhir aplikasi e-commerce.',
+    descriptionEn: 'Intensive Full-Stack Web Development course covering React.js, Node.js, Express, MongoDB, and TailwindCSS with a final project e-commerce application.',
+    gpa: '',
+    technologies: ['React.js', 'Node.js', 'Express', 'MongoDB', 'TailwindCSS'],
+  },
 ];
 
 export const footerLinks = [
-  { name: 'About', nameEn: 'About', href: 'about' },
-  { name: 'Projects', nameEn: 'Projects', href: 'projects' },
-  { name: 'Services', nameEn: 'Services', href: 'services' },
-  { name: 'Contact', nameEn: 'Contact', href: 'contact' },
+  { name: 'Tentang', href: 'about' },
+  { name: 'Pendidikan', href: 'education' },
+  { name: 'Proyek', href: 'projects' },
+  { name: 'Layanan', href: 'services' },
+  { name: 'Kontak', href: 'contact' },
 ];

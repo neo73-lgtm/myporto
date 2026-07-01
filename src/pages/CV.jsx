@@ -4,7 +4,7 @@ import { usePortfolio } from '../context/PortfolioContext';
 
 export default function CV() {
   const { lang, t } = useLanguage();
-  const { personalData, skills, workExperience } = usePortfolio();
+  const { personalData, skills, workExperience, education } = usePortfolio();
   const printRef = useRef(null);
 
   const handlePrint = () => window.print();
@@ -76,6 +76,36 @@ export default function CV() {
                 <p className="text-[11px] text-slate-500 mt-1.5">
                   <span className="font-medium text-slate-600">Tech:</span> {exp.technologies.join(', ')}
                 </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* EDUCATION */}
+        <div className="px-7 sm:px-10 py-5 sm:py-6 border-b border-slate-200">
+          <h2 className="text-[11px] font-bold text-slate-800 uppercase tracking-[0.1em] mb-4">
+            {lang === 'id' ? 'PENDIDIKAN' : 'EDUCATION'}
+          </h2>
+          <div className="space-y-5">
+            {education.map((edu) => (
+              <div key={edu.id}>
+                <div className="flex flex-col xs:flex-row xs:items-baseline xs:justify-between gap-0.5">
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900">{edu.degree}</h3>
+                    <p className="text-xs text-slate-600 font-medium">{edu.institution} — {edu.location}</p>
+                  </div>
+                  <span className="text-[11px] text-slate-500 whitespace-nowrap font-medium">
+                    {lang === 'en' ? edu.periodEn : edu.period}
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-700 mt-1.5 leading-relaxed">
+                  {lang === 'en' ? edu.descriptionEn : edu.description}
+                </p>
+                {(edu.technologies && edu.technologies.length > 0) && (
+                  <p className="text-[11px] text-slate-500 mt-1.5">
+                    <span className="font-medium text-slate-600">Tech:</span> {edu.technologies.join(', ')}
+                  </p>
+                )}
               </div>
             ))}
           </div>

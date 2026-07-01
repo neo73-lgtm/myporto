@@ -48,7 +48,7 @@ export default function WorkExperience() {
                         <FaBriefcase size={16} />
                       </div>
                       <div>
-                        <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-slate-900 dark:text-white">{exp.role}</h3>
+                        <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-slate-900 dark:text-white">{lang === 'en' && exp.roleEn ? exp.roleEn : exp.role}</h3>
                         <p className="text-xs sm:text-sm text-primary-500 font-medium">{exp.company}</p>
                       </div>
                     </div>

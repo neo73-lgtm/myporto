@@ -23,13 +23,13 @@ const contactInfo = [
 ];
 
 export default function Contact() {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
   const { personalData } = usePortfolio();
   const personalMap = {
     location: personalData.location,
     phone: personalData.phone,
     email: personalData.email,
-    workingHours: personalData.workingHours,
+    workingHours: lang === 'en' && personalData.workingHoursEn ? personalData.workingHoursEn : personalData.workingHours,
   };
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [loading, setLoading] = useState(false);
@@ -103,7 +103,7 @@ export default function Contact() {
               ))}
             </div>
             <div className="mt-4 sm:mt-6 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700/50 h-48 sm:h-52 lg:h-56">
-              <iframe title="Location" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126914.08325354069!2d106.77387097721487!3d-6.229616932219435!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3e0d4f9f6e7%3A0xb1b3e1b1b1b1b1b1!2sJakarta!5e0!3m2!1sid!2sid!4v1" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade" />
+              <iframe title="Location" src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d315.5405395607394!2d110.23008951259922!3d-6.968033304632733!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2s!5e0!3m2!1sid!2sid!4v1782925636821!5m2!1sid!2sid" width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="strict-origin-when-cross-origin" />
             </div>
           </FadeUp>
         </div>

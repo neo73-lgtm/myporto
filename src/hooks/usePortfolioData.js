@@ -7,6 +7,7 @@ import {
   services as fallbackServices,
   testimonials as fallbackTestimonials,
   workExperience as fallbackExperience,
+  education as fallbackEducation,
 } from '../data/portfolioData';
 import {
   FaReact, FaNodeJs, FaFigma, FaGithub, FaHtml5, FaCss3Alt, FaJsSquare, FaDatabase,
@@ -71,6 +72,7 @@ const defaultData = {
   services: fallbackServices,
   testimonials: fallbackTestimonials,
   workExperience: fallbackExperience,
+  education: fallbackEducation,
 };
 
 function mapProfile(row) {
@@ -78,20 +80,26 @@ function mapProfile(row) {
   const dbSocials = row.social_links || [];
   const fallbackSocials = fallbackPersonal.socialLinks || [];
   return {
-    name: row.full_name || '',
-    initials: row.initials || '',
-    title: row.title || '',
-    titleEn: row.title_id || '',
-    titles: [row.title || '', row.title_id || ''],
-    email: row.email || '',
-    phone: row.phone || '',
-    location: row.location || '',
-    workingHours: row.working_hours || '',
-    aboutParagraphs: row.about || [],
-    aboutParagraphsEn: row.about_id || [],
-    avatarUrl: row.avatar_url || '',
+    name: row.full_name || fallbackPersonal.name,
+    initials: row.initials || fallbackPersonal.initials,
+    title: row.title || fallbackPersonal.title,
+    titleEn: row.title_id || fallbackPersonal.titleEn || fallbackPersonal.title,
+    titles: [row.title || fallbackPersonal.title, row.title_id || fallbackPersonal.title],
+    email: row.email || fallbackPersonal.email,
+    phone: row.phone || fallbackPersonal.phone,
+    location: row.location || fallbackPersonal.location,
+    workingHours: row.working_hours || fallbackPersonal.workingHours,
+    workingHoursEn: row.working_hours_id || fallbackPersonal.workingHoursEn || '',
+    aboutParagraphs: row.about || fallbackPersonal.aboutParagraphs,
+    aboutParagraphsEn: row.about_id || fallbackPersonal.aboutParagraphsEn || [],
+    avatarUrl: row.avatar_url || fallbackPersonal.avatarUrl,
     cvUrl: row.cv_url || '/cv',
-    stats: (row.stats && row.stats.length > 0) ? row.stats : fallbackPersonal.stats,
+    stats: (row.stats && row.stats.length > 0)
+      ? row.stats.map(s => {
+          const fb = fallbackPersonal.stats.find(f => f.label === s.label);
+          return { ...s, labelEn: s.labelEn || fb?.labelEn || '', valueEn: s.valueEn || fb?.valueEn || '' };
+        })
+      : fallbackPersonal.stats,
     socialLinks: dbSocials.length > 0
       ? dbSocials.map(s => {
           const match = fallbackSocials.find(f => f.name === s.name);
@@ -113,87 +121,108 @@ function mapSkill(row) {
 function mapExperience(row) {
   const desc = Array.isArray(row.description) ? row.description : (row.description ? [row.description] : []);
   const descEn = Array.isArray(row.description_id) ? row.description_id : (row.description_id ? [row.description_id] : []);
+  const fb = fallbackExperience.find(e => e.id === row.id);
   return {
     id: row.id,
-    role: row.role || '',
-    roleEn: row.role_id || '',
-    company: row.company || '',
-    location: row.location || '',
-    period: row.period || '',
-    periodEn: row.period_id || '',
-    description: desc.join('\n'),
-    descriptionEn: descEn.join('\n'),
-    technologies: row.tech_stack || [],
+    role: row.role || fb?.role || '',
+    roleEn: row.role_id || fb?.roleEn || fb?.role || '',
+    company: row.company || fb?.company || '',
+    location: row.location || fb?.location || '',
+    period: row.period || fb?.period || '',
+    periodEn: row.period_id || fb?.periodEn || fb?.period || '',
+    description: desc.length ? desc.join('\n') : (fb?.description || ''),
+    descriptionEn: descEn.length ? descEn.join('\n') : (fb?.descriptionEn || fb?.description || ''),
+    technologies: row.tech_stack || fb?.technologies || [],
   };
 }
 
 function mapProject(row) {
+  const fb = fallbackProjects.find(p => p.id === row.id);
   return {
     id: row.id,
-    title: row.title || '',
-    titleEn: row.title_id || '',
-    category: row.category || '',
-    description: row.description || '',
-    descriptionEn: row.description_id || '',
-    image: row.image || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop',
-    techStack: row.tech_stack || [],
-    liveUrl: row.live_url || '',
-    githubUrl: row.source_url || '',
+    title: row.title || fb?.title || '',
+    titleEn: row.title_id || fb?.titleEn || fb?.title || '',
+    category: row.category || fb?.category || '',
+    description: row.description || fb?.description || '',
+    descriptionEn: row.description_id || fb?.descriptionEn || fb?.description || '',
+    image: row.image || fb?.image || 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop',
+    techStack: row.tech_stack || fb?.techStack || [],
+    liveUrl: row.live_url || fb?.liveUrl || '',
+    githubUrl: row.source_url || fb?.githubUrl || '',
+    videoUrl: row.video_url || fb?.videoUrl || '',
   };
 }
 
 function mapService(row) {
+  const fb = fallbackServices.find(s => s.id === row.id);
   return {
     id: row.id,
-    icon: row.icon || 'FaCode',
-    title: row.title || '',
-    titleEn: row.title_id || '',
-    description: row.description || '',
-    descriptionEn: row.description_id || '',
-    points: row.features || [],
-    pointsEn: row.features || [],
+    icon: row.icon || fb?.icon || 'FaCode',
+    title: row.title || fb?.title || '',
+    titleEn: row.title_id || fb?.titleEn || fb?.title || '',
+    description: row.description || fb?.description || '',
+    descriptionEn: row.description_id || fb?.descriptionEn || fb?.description || '',
+    points: row.features || fb?.points || [],
+    pointsEn: row.features || fb?.pointsEn || fb?.points || [],
   };
 }
 
 function mapTestimonial(row) {
+  const fb = fallbackTestimonials.find(t => t.id === row.id);
   return {
     id: row.id,
-    name: row.name || '',
-    role: row.role || '',
-    roleEn: row.role_id || '',
-    company: '',
-    text: row.content || '',
-    textEn: row.content_id || '',
-    avatar: row.avatar || '',
-    rating: row.rating || 5,
+    name: row.name || fb?.name || '',
+    role: row.role || fb?.role || '',
+    roleEn: row.role_id || fb?.roleEn || fb?.role || '',
+    company: fb?.company || '',
+    text: row.content || fb?.text || '',
+    textEn: row.content_id || fb?.textEn || fb?.text || '',
+    avatar: row.avatar || fb?.avatar || '',
+    rating: row.rating ?? fb?.rating ?? 5,
+  };
+}
+
+function mapEducation(row) {
+  const fb = fallbackEducation.find(e => e.id === row.id);
+  return {
+    id: row.id,
+    degree: row.degree || fb?.degree || '',
+    degreeEn: row.degree_id || fb?.degreeEn || fb?.degree || '',
+    institution: row.institution || fb?.institution || '',
+    location: row.location || fb?.location || '',
+    period: row.period || fb?.period || '',
+    periodEn: row.period_id || fb?.periodEn || fb?.period || '',
+    description: row.description || fb?.description || '',
+    descriptionEn: row.description_id || fb?.descriptionEn || fb?.description || '',
+    gpa: row.gpa || fb?.gpa || '',
+    technologies: row.tech_stack || fb?.technologies || [],
   };
 }
 
 export default function usePortfolioData() {
-  const [data, setData] = useState(defaultData);
-  const [loading, setLoading] = useState(true);
+  const supabaseAvailable = isSupabaseConfigured();
+  const [data, setData] = useState(supabaseAvailable ? null : defaultData);
+  const [loading, setLoading] = useState(supabaseAvailable);
   const [error, setError] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const refresh = useCallback(() => setRefreshKey(k => k + 1), []);
 
   useEffect(() => {
-    if (!isSupabaseConfigured()) {
-      setLoading(false);
-      return;
-    }
+    if (!supabaseAvailable) return;
 
     let cancelled = false;
 
     async function fetchFromSupabase() {
       try {
-        const [profileRes, skillsRes, projectsRes, servicesRes, testimonialsRes, experienceRes] = await Promise.all([
+        const [profileRes, skillsRes, projectsRes, servicesRes, testimonialsRes, experienceRes, educationRes] = await Promise.all([
           supabase.from('profiles').select('*').single(),
           supabase.from('skills').select('*'),
           supabase.from('projects').select('*'),
           supabase.from('services').select('*'),
           supabase.from('testimonials').select('*'),
           supabase.from('experience').select('*'),
+          supabase.from('education').select('*'),
         ]);
 
         if (cancelled) return;
@@ -205,9 +234,13 @@ export default function usePortfolioData() {
           services: servicesRes.data?.length ? servicesRes.data.map(mapService) : fallbackServices,
           testimonials: testimonialsRes.data?.length ? testimonialsRes.data.map(mapTestimonial) : fallbackTestimonials,
           workExperience: experienceRes.data?.length ? experienceRes.data.map(mapExperience) : fallbackExperience,
+          education: educationRes.data?.length ? educationRes.data.map(mapEducation) : fallbackEducation,
         });
       } catch (err) {
-        if (!cancelled) console.warn('Supabase fetch failed, using local data:', err.message);
+        if (!cancelled) {
+          setData(defaultData);
+          console.warn('Supabase fetch failed, using local data:', err.message);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -215,7 +248,7 @@ export default function usePortfolioData() {
 
     fetchFromSupabase();
     return () => { cancelled = true; };
-  }, [refreshKey]);
+  }, [supabaseAvailable, refreshKey]);
 
-  return { ...data, loading, error, refresh };
+  return { ...(data || {}), loading, error, refresh };
 }

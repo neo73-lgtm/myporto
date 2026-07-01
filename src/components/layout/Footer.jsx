@@ -4,7 +4,7 @@ import { footerLinks } from '../../data/portfolioData';
 import { usePortfolio } from '../../context/PortfolioContext';
 
 export default function Footer() {
-  const { lang, t } = useLanguage();
+  const { t } = useLanguage();
   const { personalData } = usePortfolio();
   const year = new Date().getFullYear();
 
@@ -35,7 +35,7 @@ export default function Footer() {
                     className="text-sm text-slate-400 hover:text-primary-400 transition-colors cursor-pointer inline-flex items-center gap-1.5"
                   >
                     <span className="w-1 h-1 rounded-full bg-slate-500" />
-                    {lang === 'en' ? link.nameEn : link.name}
+                    {link.name}
                   </Link>
                 </li>
               ))}

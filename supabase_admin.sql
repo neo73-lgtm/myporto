@@ -24,6 +24,18 @@ INSERT INTO auth.users (
   FALSE, FALSE, FALSE
 );
 
+CREATE TABLE IF NOT EXISTS education (
+  id BIGSERIAL PRIMARY KEY,
+  degree TEXT DEFAULT '',
+  institution TEXT DEFAULT '',
+  location TEXT DEFAULT '',
+  period TEXT DEFAULT '',
+  description TEXT DEFAULT '',
+  gpa TEXT DEFAULT '',
+  tech_stack TEXT[] DEFAULT '{}',
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 INSERT INTO auth.identities (
   id, user_id, identity_data, provider,
   provider_id, last_sign_in_at, created_at, updated_at
@@ -38,3 +50,5 @@ INSERT INTO auth.identities (
   (SELECT id FROM auth.users WHERE email = 'neosymphony@gmail.com')::text,
   NOW(), NOW(), NOW()
 );
+
+ALTER TABLE projects ADD COLUMN IF NOT EXISTS video_url TEXT DEFAULT '';
