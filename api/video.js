@@ -11,11 +11,9 @@ export default async function handler(req, res) {
     if (url.includes('tiktok.com')) {
       return await handleTikTok(url, res);
     }
-
     if (url.includes('instagram.com')) {
       return await handleInstagram(url, res);
     }
-
     return res.status(400).json({ error: 'Unsupported URL' });
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -24,37 +22,31 @@ export default async function handler(req, res) {
 
 // ── TikTok ──────────────────────────────────────────────────
 async function handleTikTok(url, res) {
-  // Primary: tikwm.com API
   try {
     const api = await fetch(
       `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`,
       {
         headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           Accept: 'application/json',
         },
       }
     ).then((r) => r.json());
 
     if (api.code === 0 && api.data) {
-      const videoUrl = api.data.play || api.data.wmplay || null;
+      const videoUrl = api.data.play || api.data.wmplay;
       if (videoUrl) {
-        const finalUrl = videoUrl.startsWith('http')
-          ? videoUrl
-          : `https://www.tikwm.com${videoUrl}`;
+        const finalUrl = videoUrl.startsWith('http') ? videoUrl : `https://www.tikwm.com${videoUrl}`;
         return res.json({ videoUrl: finalUrl, title: api.data.title || null });
       }
     }
   } catch {}
 
-  // Fallback: scrape TikTok page langsung
   try {
     const page = await fetch(url, {
       headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        Accept: 'text/html,application/xhtml+xml',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        Accept: 'text/html',
         'Accept-Language': 'en-US,en;q=0.9',
       },
     }).then((r) => r.text());
@@ -68,46 +60,47 @@ async function handleTikTok(url, res) {
 
 // ── Instagram ────────────────────────────────────────────────
 async function handleInstagram(url, res) {
-  // Primary: instagram-url-direct package (GraphQL API via CSRF token)
+  // 1. instagram-url-direct (GraphQL API)
   try {
-    const data = await instagramGetUrl(url, { retries: 2, delay: 1000 });
-    const videos = data.url_list.filter(
-      (u, i) => data.media_details[i]?.type === 'video'
-    );
+    const data = await instagramGetUrl(url, { retries: 1, delay: 500 });
+    const videos = data.url_list.filter((u, i) => data.media_details[i]?.type === 'video');
     if (videos.length > 0) {
       return res.json({ videoUrl: videos[0], title: data.post_info?.caption || null });
     }
   } catch {}
 
-  // Fallback 1: __a=1 endpoint (sometimes works)
+  // 2. ?__a=1 JSON endpoint
   try {
-    const shortcode = url.match(/(?:p|reel|reels|tv)\/([\w-]+)/);
+    const shortcode = extractInstagramShortcode(url);
     if (shortcode) {
-      const json = await fetch(
-        `https://www.instagram.com/p/${shortcode[1]}/?__a=1&__d=1`,
-        {
-          headers: {
-            'User-Agent':
-              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-            Accept: 'application/json',
-          },
-        }
-      ).then((r) => r.json());
+      const json = await fetch(`https://www.instagram.com/p/${shortcode}/?__a=1&__d=1`, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0',
+          Accept: 'application/json',
+        },
+      }).then((r) => r.json());
 
-      const items = json?.items?.[0] || json?.graphql?.shortcode_media;
-      if (items?.video_url) return res.json({ videoUrl: items.video_url, title: null });
-      if (items?.video_versions?.[0]?.url)
-        return res.json({ videoUrl: items.video_versions[0].url, title: null });
+      const walk = (obj, depth = 0) => {
+        if (!obj || typeof obj !== 'object' || depth > 5) return null;
+        if (obj.video_url && typeof obj.video_url === 'string') return obj.video_url;
+        if (obj.video_versions?.[0]?.url) return obj.video_versions[0].url;
+        for (const v of Object.values(obj)) {
+          const r = walk(v, depth + 1);
+          if (r) return r;
+        }
+        return null;
+      };
+
+      const vu = walk(json);
+      if (vu) return res.json({ videoUrl: vu, title: null });
     }
   } catch {}
 
-  // Fallback 2: scrape page untuk JSON-LD / video_url
+  // 3. scrape page — cari video_url di JSON apapun
   try {
     const page = await fetch(url, {
       headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        'Accept-Language': 'en-US,en;q=0.9',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
       },
     }).then((r) => r.text());
 
@@ -116,30 +109,43 @@ async function handleInstagram(url, res) {
       /"contentUrl"\s*:\s*"([^"]+)"/,
       /"url"\s*:\s*"([^"]+\.mp4[^"]*)"/,
     ];
+
     for (const p of patterns) {
       const m = page.match(p);
       if (m) {
         const vu = m[1].replace(/\\u002F/g, '/').replace(/\\/g, '');
-        if (vu) return res.json({ videoUrl: vu, title: null });
+        if (vu && vu.includes('fbcdn') || vu.includes('cdninstagram')) {
+          return res.json({ videoUrl: vu, title: null });
+        }
       }
+    }
+
+    // Cari di <script type="application/ld+json">
+    const ldMatch = page.match(/<script type="application\/ld\+json">(.*?)<\/script>/s);
+    if (ldMatch) {
+      try {
+        const ld = JSON.parse(ldMatch[1]);
+        const vu = ld?.contentUrl || ld?.video?.[0]?.contentUrl;
+        if (vu) return res.json({ videoUrl: vu, title: ld.caption || ld.description || null });
+      } catch {}
     }
   } catch {}
 
   return res.status(404).json({ error: 'Video not found' });
 }
 
+function extractInstagramShortcode(url) {
+  const m = url.match(/(?:p|reel|reels|tv)\/([\w-]+)/);
+  return m ? m[1] : null;
+}
+
 // ── TikTok extraction helpers ───────────────────────────────
 function extractTikTokVideo(html) {
   const seen = new Set();
 
-  const cdnRegex =
-    /https?:\\?\/\\?\/[^"']*?tiktokcdn[^"']*?\.(?:mp4|webm)[^"']*/gi;
-  const cdnMatches = html.matchAll(cdnRegex);
-  for (const m of cdnMatches) {
-    const clean = m[0]
-      .replace(/\\u002F/g, '/')
-      .replace(/\\\//g, '/')
-      .replace(/\\/g, '');
+  const cdnRegex = /https?:\\?\/\\?\/[^"']*?tiktokcdn[^"']*?\.(?:mp4|webm)[^"']*/gi;
+  for (const m of html.matchAll(cdnRegex)) {
+    const clean = m[0].replace(/\\u002F/g, '/').replace(/\\\//g, '/').replace(/\\/g, '');
     if (!seen.has(clean) && (clean.includes('.mp4') || clean.includes('video'))) {
       seen.add(clean);
       return clean;
@@ -147,69 +153,41 @@ function extractTikTokVideo(html) {
   }
 
   const scriptRegex = /<script[^>]*>(.*?)<\/script>/gs;
-  const scriptMatches = html.matchAll(scriptRegex);
-
-  for (const sm of scriptMatches) {
+  for (const sm of html.matchAll(scriptRegex)) {
     try {
       const text = sm[1].trim();
-      if (!text.startsWith('{') && !text.startsWith('[') && !text.startsWith('window.__'))
-        continue;
-
+      if (!text.startsWith('{') && !text.startsWith('[') && !text.startsWith('window.__')) continue;
       let json = text;
-      const varMatch = text.match(/window\.__\w+__\s*=\s*({.*?});?\s*$/);
-      if (varMatch) json = varMatch[1];
-
+      const vm = text.match(/window\.__\w+__\s*=\s*({.*?});?\s*$/);
+      if (vm) json = vm[1];
       const data = JSON.parse(json);
       const walk = (obj, depth = 0) => {
-        if (!obj || depth > 10) return null;
-        if (typeof obj !== 'object') return null;
-
-        for (const key of [
-          'playAddr',
-          'downloadAddr',
-          'playUrl',
-          'videoUrl',
-          'contentUrl',
-        ]) {
-          const val = obj[key];
-          if (typeof val === 'string' && val.includes('tiktokcdn') && !seen.has(val)) {
-            const clean = val.replace(/\\u002F/g, '/').replace(/\\\//g, '/');
-            seen.add(clean);
-            return clean;
+        if (!obj || typeof obj !== 'object' || depth > 10) return null;
+        for (const k of ['playAddr', 'downloadAddr', 'playUrl', 'videoUrl', 'contentUrl']) {
+          if (typeof obj[k] === 'string' && obj[k].includes('tiktokcdn') && !seen.has(obj[k])) {
+            const c = obj[k].replace(/\\u002F/g, '/').replace(/\\\//g, '/');
+            seen.add(c);
+            return c;
           }
         }
-
-        for (const val of Object.values(obj)) {
-          const result = walk(val, depth + 1);
-          if (result) return result;
+        for (const v of Object.values(obj)) {
+          const r = walk(v, depth + 1);
+          if (r) return r;
         }
         return null;
       };
-
-      const result = walk(data);
-      if (result) return result;
+      const r = walk(data);
+      if (r) return r;
     } catch {}
   }
 
-  const fallbackPatterns = [
-    /"playAddr"\s*:\s*"(https?:\\?\/\\?\/[^"]+)"/,
-    /"downloadAddr"\s*:\s*"(https?:\\?\/\\?\/[^"]+)"/,
-  ];
-
-  for (const p of fallbackPatterns) {
+  for (const p of [/"(playAddr|downloadAddr)"\s*:\s*"(https?:\\?\/\\?\/[^"]+)"/]) {
     const m = html.match(p);
     if (m) {
-      const clean = m[1]
-        .replace(/\\u002F/g, '/')
-        .replace(/\\\//g, '/')
-        .replace(/\\/g, '');
-      if (!seen.has(clean)) {
-        seen.add(clean);
-        return clean;
-      }
+      const c = m[2].replace(/\\u002F/g, '/').replace(/\\\//g, '/').replace(/\\/g, '');
+      if (!seen.has(c)) return c;
     }
   }
-
   return null;
 }
 
