@@ -5,7 +5,7 @@ export default function useDarkMode() {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('darkMode');
       if (saved !== null) return JSON.parse(saved);
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return false;
     }
     return false;
   });
