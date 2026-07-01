@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaArrowUp } from 'react-icons/fa';
+import WhatsAppButton from './components/ui/WhatsAppButton';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import Hero from './components/sections/Hero';
@@ -76,6 +77,7 @@ function PublicLayout({ darkMode, toggleDarkMode }) {
       </main>
       <Footer />
       <ScrollToTopBtn />
+      <WhatsAppButton />
     </>
   );
 }
