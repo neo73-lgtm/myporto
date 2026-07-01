@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { FaTimes, FaDownload, FaSpinner, FaExternalLinkAlt } from 'react-icons/fa';
 
 export default function VideoModal({ url, onClose }) {
@@ -6,6 +6,8 @@ export default function VideoModal({ url, onClose }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showUI, setShowUI] = useState(true);
+  const [useProxy, setUseProxy] = useState(false);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -29,6 +31,15 @@ export default function VideoModal({ url, onClose }) {
     loadVideo();
     return () => { cancelled = true; };
   }, [url]);
+
+  const handleVideoError = useCallback(() => {
+    if (!useProxy && directUrl) {
+      setUseProxy(true);
+      setError(null);
+    } else {
+      setError('Gagal memuat video');
+    }
+  }, [useProxy, directUrl]);
 
   const handleKeyDown = useCallback((e) => {
     if (e.key === 'Escape') onClose();
@@ -57,6 +68,10 @@ export default function VideoModal({ url, onClose }) {
     };
   }, [handleKeyDown]);
 
+  const videoSrc = useProxy && directUrl
+    ? `/api/video-proxy?url=${encodeURIComponent(directUrl)}`
+    : directUrl;
+
   return (
     <div
       className="fixed inset-0 z-[100] bg-black flex items-center justify-center select-none"
@@ -69,20 +84,23 @@ export default function VideoModal({ url, onClose }) {
         </div>
       )}
 
-      {!loading && directUrl && (
+      {!loading && videoSrc && !error && (
         <video
-          src={directUrl}
+          ref={videoRef}
+          key={useProxy ? 'proxy' : 'direct'}
+          src={videoSrc}
           className="w-full h-full object-contain"
           controls
           autoPlay
           playsInline
           onClick={(e) => e.stopPropagation()}
+          onError={handleVideoError}
         />
       )}
 
-      {!loading && !directUrl && (
+      {!loading && error && (
         <div className="flex flex-col items-center gap-4 text-white/60" onClick={(e) => e.stopPropagation()}>
-          <span className="text-sm">{error || 'Gagal memuat video'}</span>
+          <span className="text-sm">{error}</span>
           <a
             href={url}
             target="_blank"
@@ -96,9 +114,9 @@ export default function VideoModal({ url, onClose }) {
       )}
 
       <div className={`fixed top-0 right-0 p-4 flex gap-2 transition-opacity duration-300 ${showUI ? 'opacity-100' : 'opacity-0'}`}>
-        {directUrl && (
+        {videoSrc && !error && (
           <a
-            href={directUrl}
+            href={videoSrc}
             target="_blank"
             rel="noopener noreferrer"
             className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white/20 transition-colors"
